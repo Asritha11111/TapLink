@@ -3,6 +3,9 @@
 // 1. Load environment variables from .env
 require('dotenv').config();
 
+const http = require('http');
+const initializeSocket = require('./socket/socket');
+
 // 2. Import core packages
 const express = require('express');
 const cors = require('cors');
@@ -10,6 +13,8 @@ const authRoutes = require('./routes/auth.routes');
 
 // 3. Create the Express application
 const app = express();
+
+
 
 // 4. Global middleware
 app.use(express.json());
@@ -43,7 +48,12 @@ app.use((err, req, res, next) => {
 });
 
 // 8. Start the server
+const server = http.createServer(app);
+
+initializeSocket(server);
+
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
+
+server.listen(PORT, () => {
   console.log(`TapLink backend running on http://localhost:${PORT}`);
 });
