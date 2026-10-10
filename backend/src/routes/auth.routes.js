@@ -6,7 +6,7 @@
 //
 // Full URL prefix will be set in server.js when we mount these
 // routes under /api/auth.
-
+const { verifyToken } = require('../middleware/auth.middleware');
 const express = require('express');
 const authController = require('../controllers/auth.controller');
 
@@ -19,6 +19,6 @@ router.post('/register', authController.register);
 router.post('/login', authController.login);
 
 // GET  /api/auth/me        → return the logged-in user
-router.get('/me', authController.me);
+router.get('/me', verifyToken, authController.me);
 
 module.exports = router;
