@@ -6,6 +6,7 @@ require('dotenv').config();
 // 2. Import core packages
 const express = require('express');
 const cors = require('cors');
+const authRoutes = require('./routes/auth.routes');
 
 // 3. Create the Express application
 const app = express();
@@ -23,6 +24,9 @@ app.use(
 app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'ok', service: 'TapLink backend' });
 });
+
+// Mount auth routes under /api/auth
+app.use('/api/auth', authRoutes);
 
 // 6. 404 handler (no route matched)
 app.use((req, res) => {
