@@ -9,14 +9,13 @@
 const { verifyToken } = require('../middleware/auth.middleware');
 const express = require('express');
 const authController = require('../controllers/auth.controller');
+const { validateRegister, validateLogin } = require('../middleware/validate.middleware');
 
 const router = express.Router();
 
 // POST /api/auth/register  → create a new user
-router.post('/register', authController.register);
-
-// POST /api/auth/login     → log in and receive a JWT
-router.post('/login', authController.login);
+router.post('/register', validateRegister, authController.register);
+router.post('/login', validateLogin, authController.login);
 
 // GET  /api/auth/me        → return the logged-in user
 router.get('/me', verifyToken, authController.me);
