@@ -1,8 +1,5 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+// prisma/schema.prisma — TapLink full schema
+// Run: npx prisma migrate dev --name <migration_name>
 
 generator client {
   provider = "prisma-client-js"
@@ -13,6 +10,9 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// USER
+// ─────────────────────────────────────────────────────────────────────────────
 model User {
   id           String   @id @default(uuid()) @db.Uuid
   name         String
@@ -20,4 +20,138 @@ model User {
   passwordHash String
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
+
+  // Relations
+  contactsInitiated Contact[]              @relation("ContactRequester")
+  contactsReceived  Contact[]              @relation("ContactTarget")
+  conversations     ConversationParticipant[]
+  sentMessages      Message[]
+  tapCodes          TapCode[]
+  emergencyAlerts   EmergencyAlert[]       @relation("AlertSender")
+  emergencyReceived EmergencyAlert[]       @relation("AlertRecipient")
+  locationShares    LocationShare[]
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CONTACT
+// A directional relationship: userId added targetId as a contact.
+// Both directions are stored so each user can manage their own list.
+// ─────────────────────────────────────────────────────────────────────────────
+model Contact {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  targetId  String   @db.Uuid
+  createdAt DateTime @default(now())
+
+  user   User @relation("ContactRequester", fields: [userId], references: [id], onDelete: Cascade)
+  target User @relation("ContactTarget",    fields: [targetId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, targetId])
+  @@index([userId])
+  @@index([targetId])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CONVERSATION
+// ─────────────────────────────────────────────────────────────────────────────
+model Conversation {
+  id        String   @id @default(uuid()) @db.Uuid
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  participants ConversationParticipant[]
+  messages     Message[]
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CONVERSATION PARTICIPANT
+// Junction table linking Users to Conversations.
+// ─────────────────────────────────────────────────────────────────────────────
+model ConversationParticipant {
+  id             String   @id @default(uuid()) @db.Uuid
+  conversationId String   @db.Uuid
+  userId         String   @db.Uuid
+  joinedAt       DateTime @default(now())
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId],         references: [id], onDelete: Cascade)
+
+  @@unique([conversationId, userId])
+  @@index([conversationId])
+  @@index([userId])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MESSAGE
+// ─────────────────────────────────────────────────────────────────────────────
+model Message {
+  id             String   @id @default(uuid()) @db.Uuid
+  conversationId String   @db.Uuid
+  senderId       String   @db.Uuid
+  body           String
+  createdAt      DateTime @default(now())
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender       User         @relation(fields: [senderId],       references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+  @@index([senderId])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// TAPCODE
+// A user-defined tap pattern linked to a predefined message.
+// Pattern is stored as a JSON string: e.g. ["S","S","L","S"]
+// where S=short tap, L=long tap.
+// ─────────────────────────────────────────────────────────────────────────────
+model TapCode {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  name      String
+  pattern   String   // JSON-encoded tap sequence
+  message   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, pattern])
+  @@index([userId])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// EMERGENCY ALERT
+// Stored per-recipient to track delivery status.
+// ─────────────────────────────────────────────────────────────────────────────
+model EmergencyAlert {
+  id          String    @id @default(uuid()) @db.Uuid
+  senderId    String    @db.Uuid
+  recipientId String    @db.Uuid
+  message     String    @default("🚨 EMERGENCY ALERT — I need help immediately!")
+  latitude    Float?
+  longitude   Float?
+  sentAt      DateTime  @default(now())
+  readAt      DateTime?
+
+  sender    User @relation("AlertSender",    fields: [senderId],    references: [id], onDelete: Cascade)
+  recipient User @relation("AlertRecipient", fields: [recipientId], references: [id], onDelete: Cascade)
+
+  @@index([senderId])
+  @@index([recipientId])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// LOCATION SHARE
+// Optional, explicit-consent location record.
+// ─────────────────────────────────────────────────────────────────────────────
+model LocationShare {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  latitude  Float
+  longitude Float
+  sharedAt  DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }

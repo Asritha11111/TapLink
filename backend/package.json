@@ -5,7 +5,8 @@
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
-    "dev": "nodemon src/server.js"
+    "dev": "nodemon src/server.js",
+    "test": "jest --testTimeout=30000 --forceExit"
   },
   "keywords": [],
   "author": "",
@@ -13,14 +14,18 @@
   "type": "commonjs",
   "dependencies": {
     "@prisma/client": "^6.19.3",
+    "bcrypt": "^6.0.0",
     "cors": "^2.8.6",
     "dotenv": "^18.0.6",
     "express": "^5.2.1",
-    "jsonwebtoken": "^9.0.3"
+    "jsonwebtoken": "^9.0.3",
+    "socket.io": "^4.8.4"
   },
   "devDependencies": {
+    "jest": "^30.5.2",
     "nodemon": "^3.1.14",
-    "prisma": "^6.19.3"
+    "prisma": "^6.19.3",
+    "supertest": "^7.3.1"
   },
   "allowScripts": {
     "@prisma/engines@6.19.3": true,

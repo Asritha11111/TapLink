@@ -1,0 +1,45 @@
+/* src/styles/TapCode.css */
+.tap-pattern-display {
+  background: var(--cream-dark);
+  border-radius: var(--radius-sm);
+  padding: 14px 18px;
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-family: monospace;
+  font-size: 1.1rem;
+}
+
+.tap-symbol {
+  display: inline-block;
+  color: var(--brown);
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1;
+  animation: pop 0.15s ease;
+}
+.tap-symbol.long { color: var(--accent); }
+@keyframes pop { 0% { transform: scale(1.5); } 100% { transform: scale(1); } }
+
+.tap-btn {
+  width: 90px; height: 90px;
+  border-radius: 50%;
+  border: 3px solid var(--brown);
+  background: var(--cream);
+  color: var(--brown);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  transition: background 0.1s, transform 0.1s, box-shadow 0.1s;
+  user-select: none;
+  touch-action: none;
+}
+.tap-btn.pressing, .tap-btn:active {
+  background: var(--brown);
+  color: var(--cream);
+  transform: scale(0.92);
+  box-shadow: 0 0 0 6px rgba(74,44,32,0.2);
+}
+.tap-btn:hover:not(.pressing) { background: var(--cream-dark); }
