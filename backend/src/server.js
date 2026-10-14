@@ -22,13 +22,18 @@ const { setupSocketHandler } = require('./sockets/socket.handler');
 // ─────────────────────────────────────────────────────────────────────────────
 const app = express();
 
-const FRONTEND_URL = process.env.CLIENT_ORIGIN || 'http://localhost:5173';
+const FRONTEND_URL = process.env.CLIENT_ORIGIN || 'https://taplink-frontend.onrender.com';
 
 app.use(express.json({ limit: '50kb' }));
 app.use(
   cors({
-    origin: FRONTEND_URL,
+    origin: [
+      'https://taplink-frontend.onrender.com',
+      'http://localhost:5173',
+    ],
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
   })
 );
 
