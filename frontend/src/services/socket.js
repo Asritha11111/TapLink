@@ -11,7 +11,12 @@ export function getSocket() {
 export function connectSocket(token) {
   if (socket && socket.connected) return socket;
 
-  socket = io(window.location.origin, {
+  const socketUrl =
+    import.meta.env.VITE_SOCKET_URL ||
+    import.meta.env.VITE_API_URL ||
+    window.location.origin;
+
+  socket = io(socketUrl, {
     auth: { token },
     reconnectionDelay: 1000,
     reconnectionDelayMax: 5000,
