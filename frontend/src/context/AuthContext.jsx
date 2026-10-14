@@ -12,16 +12,35 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   // Restore from localStorage on mount
-  useEffect(() => {
-    const savedToken = localStorage.getItem('taplink_token');
-    const savedUser  = localStorage.getItem('taplink_user');
-    if (savedToken && savedUser) {
+  // Restore from localStorage on mount
+useEffect(() => {
+  const savedToken = localStorage.getItem('taplink_token');
+  const savedUser = localStorage.getItem('taplink_user');
+
+  if (
+    savedToken &&
+    savedUser &&
+    savedUser !== 'undefined' &&
+    savedUser !== 'null'
+  ) {
+    try {
+      const parsedUser = JSON.parse(savedUser);
+
       setToken(savedToken);
-      setUser(JSON.parse(savedUser));
+      setUser(parsedUser);
       connectSocket(savedToken);
+    } catch (error) {
+      console.error('Failed to parse saved user:', error);
+
+      localStorage.removeItem('taplink_token');
+      localStorage.removeItem('taplink_user');
+      setToken(null);
+      setUser(null);
     }
-    setLoading(false);
-  }, []);
+  }
+
+  setLoading(false);
+}, []);
 
   const login = useCallback(async ({ email, password }) => {
     const { data } = await api.post('/auth/login', { email, password });
