@@ -1,0 +1,15 @@
+/* src/styles/Emergency.css */
+.emergency-contact-item { transition: background var(--ease), box-shadow var(--ease); }
+.emergency-contact-item.selected {
+  background: rgba(74, 44, 32, 0.08);
+  border: 2px solid var(--brown);
+  box-shadow: var(--shadow-sm);
+}
+
+.emergency-sent {
+  text-align: center;
+  padding: 48px 20px;
+}
+.emergency-sent-icon { font-size: 4rem; margin-bottom: 16px; }
+.emergency-sent h1 { font-family: var(--font-brand); font-size: 2rem; color: var(--brown); margin-bottom: 12px; }
+.emergency-sent p { color: var(--light-brown); font-size: 1rem; margin-bottom: 6px; }

@@ -1,0 +1,40 @@
+# Dependencies
+node_modules/
+
+# Environment files — NEVER commit .env with real secrets
+.env
+.env.local
+.env.*.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Build output
+dist/
+build/
+.vite/
+
+# Prisma local db
+*.db
+*.db-journal
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# Coverage
+coverage/
+.nyc_output/
+
+# Test caches
+.jest-cache/
+
+# Temporary files
+*.tmp
+*.log
